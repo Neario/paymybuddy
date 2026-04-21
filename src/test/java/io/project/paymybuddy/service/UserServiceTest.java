@@ -2,6 +2,7 @@ package io.project.paymybuddy.service;
 
 import io.project.paymybuddy.dto.UserRegisterDto;
 import io.project.paymybuddy.dto.mapper.UserMapper;
+import io.project.paymybuddy.event.UserCreatedEvent;
 import io.project.paymybuddy.model.User;
 import io.project.paymybuddy.repository.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Optional;
@@ -31,6 +33,9 @@ public class UserServiceTest {
     @Mock
     private UserMapper userMapper;
 
+    @Mock
+    private ApplicationEventPublisher publisher;
+
     @Test
     public void shouldRegisterUser() {
         UserRegisterDto userRegisterDto = new UserRegisterDto("mika", "mika", "mika@test.com");
@@ -48,6 +53,7 @@ public class UserServiceTest {
 
         verify(userRepository).save(userCreated);
         assertNotNull(userCreated);
+        verify(publisher).publishEvent(any(UserCreatedEvent.class));
 
     }
 }

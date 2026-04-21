@@ -3,6 +3,9 @@ package io.project.paymybuddy.model;
 import io.project.paymybuddy.model.enumeration.UserRole;
 import jakarta.persistence.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Table(name = "users")
 public class User {
@@ -15,7 +18,13 @@ public class User {
     private String email;
     @Enumerated(EnumType.STRING)
     private UserRole role;
-    private int balance;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Wallet wallet;
+
+    public User() {}
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,  orphanRemoval = true)
+    private Set<Relation> relations =  new HashSet<>();
 
     public void setId(Long id) {
         this.id = id;
@@ -57,11 +66,19 @@ public class User {
         this.role = role;
     }
 
-    public int getBalance() {
-        return balance;
+    public Set<Relation> getRelations() {
+        return relations;
     }
 
-    public void setBalance(int balance) {
-        this.balance = balance;
+    public void setRelations(Set<Relation> relations) {
+        this.relations = relations;
+    }
+
+    public Wallet getWallet() {
+        return wallet;
+    }
+
+    public void setWallet(Wallet wallet) {
+        this.wallet = wallet;
     }
 }
