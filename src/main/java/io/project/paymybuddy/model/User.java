@@ -4,6 +4,7 @@ import io.project.paymybuddy.model.enumeration.UserRole;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

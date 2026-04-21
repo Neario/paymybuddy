@@ -14,40 +14,45 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SpringSecurityConfig {
 
-	private final CustomUserDetailsService customUserDetailsService;
+    private final CustomUserDetailsService customUserDetailsService;
 
-	public SpringSecurityConfig(CustomUserDetailsService customUserDetailsService) {
-		this.customUserDetailsService = customUserDetailsService;
-	}
+    public SpringSecurityConfig(CustomUserDetailsService customUserDetailsService) {
+        this.customUserDetailsService = customUserDetailsService;
+    }
 
     @Bean
-	public SecurityFilterChain configure(HttpSecurity http) {
-		return http
-			.authorizeHttpRequests(auth -> {
-				auth.requestMatchers("/admin").hasRole("ADMIN");
-				auth.requestMatchers("/user").hasRole("USER");
-				auth.anyRequest().authenticated();
-			})
-			.formLogin(Customizer.withDefaults())
-			.build();
-	}
+    public SecurityFilterChain configure(HttpSecurity http) {
+        return http
+                .authorizeHttpRequests(auth -> {
+                    auth
+                            .requestMatchers("/auth/**").permitAll()
+                            .requestMatchers("/admin").hasRole("ADMIN")
+                            .anyRequest().authenticated();
+                })
+                .formLogin(form -> form
+                        .loginPage("/auth/login")
+                        .permitAll()
+                )
+                .build();
+    }
 
-	@Bean
-	public AuthenticationManager authenticationManagerBean(
-		HttpSecurity http,
-		BCryptPasswordEncoder bCryptPasswordEncoder
-	) {
-		AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(
-			AuthenticationManagerBuilder.class
-		);
-		authenticationManagerBuilder
-			.userDetailsService(customUserDetailsService)
-			.passwordEncoder(bCryptPasswordEncoder);
-		return authenticationManagerBuilder.build();
-	}
+    @Bean
+    public AuthenticationManager authenticationManagerBean(
+            HttpSecurity http,
+            BCryptPasswordEncoder bCryptPasswordEncoder
+    ) {
+        AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(
+                AuthenticationManagerBuilder.class
+        );
 
-	@Bean
-	public BCryptPasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
+        authenticationManagerBuilder
+                .userDetailsService(customUserDetailsService)
+                .passwordEncoder(bCryptPasswordEncoder);
+        return authenticationManagerBuilder.build();
+    }
+
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 }
