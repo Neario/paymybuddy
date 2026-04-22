@@ -6,7 +6,6 @@ import io.project.paymybuddy.event.UserCreatedEvent;
 import io.project.paymybuddy.exception.AlreadyExistsException;
 import io.project.paymybuddy.model.User;
 import io.project.paymybuddy.repository.UserRepository;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -15,9 +14,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -35,7 +33,7 @@ public class UserServiceTest {
     private UserServiceImpl userService;
 
     @Mock
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
+    private PasswordEncoder passwordEncoder;
 
     @Mock
     private UserMapper userMapper;
@@ -53,7 +51,7 @@ public class UserServiceTest {
 
         when(userRepository.findByEmail(userRegisterDto.getEmail())).thenReturn(Optional.empty());
         when(userMapper.fromDto(userRegisterDto)).thenReturn(user);
-        when(bCryptPasswordEncoder.encode(userRegisterDto.getPassword())).thenReturn("encodedPassword");
+        when(passwordEncoder.encode(userRegisterDto.getPassword())).thenReturn("encodedPassword");
         when(userRepository.save(user)).thenReturn(user);
 
         User userCreated = userService.createUser(userRegisterDto);

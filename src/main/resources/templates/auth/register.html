@@ -7,7 +7,7 @@
 
 <h2>Registration</h2>
 
-<form th:action="@{/auth/register}" th:object="${userRegister}" method="post">
+<form th:action="@{/register}" th:object="${userRegister}" method="post">
     <div>
         <label>Username :</label>
         <input type="text" th:field="*{username}" />
