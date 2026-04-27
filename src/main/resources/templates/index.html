@@ -8,6 +8,11 @@
 <body>
 
     <h1>Home</h1>
+    <p th:text="${user.username}">Bonjour username</p>
+    <p th:text="${user.email}">email</p>
+    <p th:text="${user.role}">role</p>
+
+
     <form th:action="@{/logout}" method="post">
         <button type="submit">Se déconnecter</button>
     </form>
