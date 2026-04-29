@@ -13,7 +13,7 @@ public class UserRepositoryTest {
     private UserRepository userRepository;
 
     @Test
-    public void should_save_user(){
+    public void shouldSaveUser(){
         User user = new User();
         user.setEmail("mika@mail.com");
         user.setUsername("mika");

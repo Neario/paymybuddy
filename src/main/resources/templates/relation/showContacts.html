@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <p>Contact de <span th:text="${user.username}"></span></p>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Username</th>
+            <th>Email</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="relation : ${relations}">
+            <td th:text="${relation.relation.username}"></td>
+            <td th:text="${relation.relation.email}"></td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(relations)}">
+            <td colspan="2">Aucun contact pour le moment</td>
+        </tr>
+        </tbody>
+    </table>
+</body>
+</html>

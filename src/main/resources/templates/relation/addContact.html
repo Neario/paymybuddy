@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <form th:action="@{/contact}" th:object="${relation}" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+        <label for="email">Email du contact</label>
+        <input id="email" type="email" th:field="*{email}" placeholder="contact@email.com"/>
+        <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
+
+        <button type="submit">Ajouter</button>
+        <a th:href="@{/}">Retour</a>
+    </form>
+</body>
+</html>
