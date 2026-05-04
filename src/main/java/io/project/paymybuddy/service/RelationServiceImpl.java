@@ -25,16 +25,23 @@ public class RelationServiceImpl implements RelationService {
         this.relationRepository = relationRepository;
         this.userRepository = userRepository;
     }
+
     @Override
     @Transactional
     public void addRelation(User currentUser, RelationDto relationDto) {
-        User contact = userRepository.findByEmail(relationDto.getEmail())
+        final User contact = userRepository.findByEmail(relationDto.getEmail())
                 .orElseThrow(() -> new UserNotFoundException("No user found with email", HttpStatus.NOT_FOUND));
 
         if (currentUser.getId().equals(contact.getId())) {
             throw new AddYourselfException("Cannot add yourself", HttpStatus.CONFLICT);
         }
-        if (relationRepository.existsByUserIdAndRelationId(currentUser.getId(), contact.getId())) {
+
+        final boolean areFriends = contact.getRelations()
+                .stream()
+                .map(c -> c.getId())
+                .anyMatch(c -> c.equals(currentUser.getId()));
+
+        if (areFriends) {
             throw new AlreadyExistsException("User already in your contact", HttpStatus.CONFLICT);
         }
         Relation relation = new Relation();

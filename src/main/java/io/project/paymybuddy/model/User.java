@@ -81,4 +81,6 @@ public class User {
     public void setWallet(Wallet wallet) {
         this.wallet = wallet;
     }
+
+
 }

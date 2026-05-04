@@ -5,6 +5,7 @@ import io.project.paymybuddy.model.User;
 import io.project.paymybuddy.security.CustomUserDetails;
 import io.project.paymybuddy.service.interfaces.RelationService;
 import jakarta.validation.Valid;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,6 +13,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+
+import java.util.List;
 
 @Controller
 public class RelationController {
@@ -36,10 +39,29 @@ public class RelationController {
     }
 
     @PostMapping("/contact")
-    public String addContact(@Valid @ModelAttribute RelationDto relationDto,
+    public String addContact(@Valid @ModelAttribute("relation") RelationDto relationDto,
                              BindingResult bindingResult,
-                             @AuthenticationPrincipal CustomUserDetails currentUser) {
-        relationService.addRelation(currentUser.getUser(), relationDto);
-        return "redirect:/contact/show";
+                             @AuthenticationPrincipal CustomUserDetails currentUser, Model model) {
+
+        if (bindingResult.hasErrors()) {
+            List<String> errors = bindingResult.getFieldErrors().stream()
+                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                    .toList();
+
+            model.addAttribute("errors", errors);
+            model.addAttribute("relation", relationDto);
+
+            return "relation/addContact";
+        }
+
+        try {
+            relationService.addRelation(currentUser.getUser(), relationDto);
+            return "redirect:/contact/show";
+        } catch (Exception exception) {
+            model.addAttribute("errors", List.of(exception.getMessage()));
+            model.addAttribute("relation", relationDto);
+            return "relation/addContact";
+
+        }
     }
 }

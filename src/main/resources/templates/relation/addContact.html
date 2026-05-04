@@ -10,10 +10,16 @@
 
         <label for="email">Email du contact</label>
         <input id="email" type="email" th:field="*{email}" placeholder="contact@email.com"/>
-        <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
 
         <button type="submit">Ajouter</button>
         <a th:href="@{/}">Retour</a>
+        <div>
+            <div th:if="${errors}">
+                <ul>
+                    <li th:each="error : ${errors}" th:text="${error}"></li>
+                </ul>
+            </div>
+        </div>
     </form>
 </body>
 </html>
