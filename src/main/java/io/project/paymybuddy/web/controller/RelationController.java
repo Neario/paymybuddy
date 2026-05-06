@@ -1,7 +1,6 @@
 package io.project.paymybuddy.web.controller;
 
 import io.project.paymybuddy.dto.RelationDto;
-import io.project.paymybuddy.model.User;
 import io.project.paymybuddy.security.CustomUserDetails;
 import io.project.paymybuddy.service.interfaces.RelationService;
 import jakarta.validation.Valid;
@@ -61,7 +60,6 @@ public class RelationController {
             model.addAttribute("errors", List.of(exception.getMessage()));
             model.addAttribute("relation", relationDto);
             return "relation/addContact";
-
         }
     }
 }
