@@ -9,6 +9,7 @@ import io.project.paymybuddy.model.enumeration.UserRole;
 import io.project.paymybuddy.repository.RelationRepository;
 import io.project.paymybuddy.repository.TransactionRepository;
 import io.project.paymybuddy.repository.UserRepository;
+import io.project.paymybuddy.repository.WalletRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,6 +39,9 @@ public class TransactionServiceTest {
 
     @Mock
     private TransactionRepository transactionRepository;
+
+    @Mock
+    private WalletRepository walletRepository;
 
     @InjectMocks
     private TransactionServiceImpl transactionService;

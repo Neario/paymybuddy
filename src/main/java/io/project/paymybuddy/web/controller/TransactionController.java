@@ -36,7 +36,8 @@ public class TransactionController {
 
     @PostMapping("/transaction")
     public String sendCash(@Valid @ModelAttribute("transactionRequest") TransactionRequestDto transactionRequestDto,
-                           BindingResult bindingResult, @AuthenticationPrincipal CustomUserDetails currentUser,
+                           BindingResult bindingResult,
+                           @AuthenticationPrincipal CustomUserDetails currentUser,
                            Model model) {
         if (bindingResult.hasErrors()) {
             List<String> errors = bindingResult.getFieldErrors().stream()

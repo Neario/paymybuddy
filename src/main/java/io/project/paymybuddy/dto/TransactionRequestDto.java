@@ -12,7 +12,7 @@ public class TransactionRequestDto {
 
     @NotNull
     @Min(1)
-    private BigDecimal amount;
+    private BigDecimal amount; // todo passer en int ( le front fait amount * 100 )
 
     @NotBlank
     private String description;

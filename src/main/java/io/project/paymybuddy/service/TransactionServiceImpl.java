@@ -1,6 +1,7 @@
 package io.project.paymybuddy.service;
 
 import io.project.paymybuddy.dto.TransactionRequestDto;
+import io.project.paymybuddy.dto.TransactionResponse;
 import io.project.paymybuddy.exception.InsufficientSoldException;
 import io.project.paymybuddy.exception.RelationNotFoundException;
 import io.project.paymybuddy.exception.SendMoneyYourselfException;
@@ -18,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -30,8 +32,10 @@ public class TransactionServiceImpl implements TransactionService {
     private final WalletRepository walletRepository;
     private final TransactionRepository transactionRepository;
 
-    public TransactionServiceImpl(UserRepository userRepository, RelationRepository relationRepository,
-                                  WalletRepository walletRepository, TransactionRepository transactionRepository) {
+    public TransactionServiceImpl(final UserRepository userRepository,
+                                  final RelationRepository relationRepository,
+                                  final WalletRepository walletRepository,
+                                  final TransactionRepository transactionRepository) {
         this.userRepository = userRepository;
         this.relationRepository = relationRepository;
         this.walletRepository = walletRepository;
@@ -39,11 +43,10 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public void transaction(User sender, TransactionRequestDto transactionRequestDto) {
-        User receiver = userRepository.findByEmail(transactionRequestDto.getReceiver())
+    public void transaction(final User sender, final TransactionRequestDto transactionRequestDto) {
+
+        final User receiver = userRepository.findByEmail(transactionRequestDto.getReceiver())
                 .orElseThrow(() -> new UserNotFoundException("No user found with email", HttpStatus.NOT_FOUND));
-        Wallet senderWallet = sender.getWallet();
-        Wallet receiverWallet = receiver.getWallet();
 
         if (receiver.getId().equals(sender.getId())) {
             throw new SendMoneyYourselfException("Cannot send money yourself", HttpStatus.CONFLICT);
@@ -56,17 +59,22 @@ public class TransactionServiceImpl implements TransactionService {
         int amount = MoneyUtils.toCents(transactionRequestDto.getAmount());
         int total = MoneyUtils.withFee(amount, FEE_RATE);
 
+        final Wallet senderWallet = sender.getWallet();
+
+
         if (senderWallet.getBalance() < total) {
             throw new InsufficientSoldException("Insufficient sold in your wallet", HttpStatus.CONFLICT);
         }
 
+        final Wallet receiverWallet = receiver.getWallet();
+
         senderWallet.setBalance(senderWallet.getBalance() - total);
         receiverWallet.setBalance(receiverWallet.getBalance() + amount);
 
-        walletRepository.save(senderWallet);
-        walletRepository.save(receiverWallet);
+        walletRepository.saveAll(List.of(senderWallet, receiverWallet));
 
-        Transaction transaction = new Transaction();
+        // todo : passer par un constructeur
+        final Transaction transaction = new Transaction();
         transaction.setSender(sender);
         transaction.setReceiver(receiver);
         transaction.setAmount(amount);
@@ -79,4 +87,33 @@ public class TransactionServiceImpl implements TransactionService {
     public List<Transaction> getTransactions(long senderId) {
         return transactionRepository.findAllBySenderId(senderId);
     }
+
+
+    public List<TransactionResponse> getAllTransactions(long senderId) {
+
+        return transactionRepository.findAllBySenderOrReceiverId(senderId)
+                .stream()
+                .map(transaction -> convertTransaction(transaction, senderId))
+                .toList();
+
+    }
+
+    private TransactionResponse convertTransaction(final Transaction transaction, final Long userId) {
+        int multiplicator = 1;
+        String user;
+
+        if (transaction.getSender().getId().equals(userId)) {
+            multiplicator = -1;
+            user = transaction.getReceiver().getUsername();
+        } else {
+            user = transaction.getSender().getUsername();
+        }
+
+        return new TransactionResponse(
+                user,
+                transaction.getAmount() * multiplicator,
+                LocalDateTime.now() //todo fix
+        );
+    }
+
 }
