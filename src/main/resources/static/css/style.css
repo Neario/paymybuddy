@@ -2,3 +2,39 @@
     width: fit-content;
     background-color: #f5a623;
 }
+
+/*GENERAL*/
+.btn-orange{
+    background-color: #f5a623;
+}
+.btn-orange:hover{
+    background-color: #f5a623;
+}
+
+/*PROFILE*/
+
+.item{
+    display: flex;
+    flex-direction: row;
+    gap: 3rem;
+    width: 250px;
+}
+
+.item label{
+    width: 35%;
+}
+.item p{
+    margin-bottom: 0;
+}
+
+
+/*TRANSACTION*/
+select{
+    padding: 0.6rem;
+    border-radius: 3px;
+    border: 1px solid lightslategray;
+}
+
+table tbody tr:last-child{
+    border: transparent;
+}
