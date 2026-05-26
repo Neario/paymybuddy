@@ -60,7 +60,7 @@ public class TransactionController {
     private void hydrateModel(CustomUserDetails currentUser, Model model, TransactionRequestDto transactionRequestDto) {
         model.addAttribute("currentUser", currentUser.getUser());
         model.addAttribute("transactionRequest", transactionRequestDto);
-        model.addAttribute("transactions", transactionService.getTransactions(currentUser.getUser().getId()));
+        model.addAttribute("transactions", transactionService.getAllTransactions(currentUser.getUser().getId()));
         model.addAttribute("contacts", relationService.getRelations(currentUser.getUser().getId()));
     }
 }

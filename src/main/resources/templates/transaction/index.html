@@ -48,8 +48,8 @@
                 </thead>
                 <tbody>
                 <tr th:each="transaction : ${transactions}">
-                    <td th:text="${transaction.getReceiver().username}"></td>
-                    <td th:text="${transaction.description}"></td>
+                    <td th:text="${transaction.user}"></td>
+                    <td></td>
                     <td th:text="${@moneyUtils.toEuros(transaction.amount)}"></td>
                 </tr>
                 <tr th:if="${#lists.isEmpty(transactions)}">

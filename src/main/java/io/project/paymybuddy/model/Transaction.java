@@ -2,7 +2,7 @@ package io.project.paymybuddy.model;
 
 import jakarta.persistence.*;
 
-import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Entity
 public class Transaction {
@@ -24,9 +24,25 @@ public class Transaction {
     private int amount;
 
     @Column(nullable = false)
-    private BigDecimal fee;
+    private int fee;
+
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = LocalDateTime.now();
+    }
 
     public Transaction() {}
+
+    public Transaction(User sender, User receiver, String description, int amount, int fee) {
+        this.sender = sender;
+        this.receiver = receiver;
+        this.description = description;
+        this.amount = amount;
+        this.fee = fee;
+    }
 
     public void setId(Long id) {
         this.id = id;
@@ -68,11 +84,15 @@ public class Transaction {
         this.amount = amount;
     }
 
-    public BigDecimal getFee() {
+    public int getFee() {
         return fee;
     }
 
-    public void setFee(BigDecimal fee) {
+    public void setFee(int fee) {
         this.fee = fee;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 }

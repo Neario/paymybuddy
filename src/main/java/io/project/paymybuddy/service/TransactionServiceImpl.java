@@ -14,12 +14,11 @@ import io.project.paymybuddy.repository.TransactionRepository;
 import io.project.paymybuddy.repository.UserRepository;
 import io.project.paymybuddy.repository.WalletRepository;
 import io.project.paymybuddy.service.interfaces.TransactionService;
-import io.project.paymybuddy.utils.MoneyUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.math.RoundingMode;
 import java.util.List;
 
 @Service
@@ -56,11 +55,11 @@ public class TransactionServiceImpl implements TransactionService {
             throw new RelationNotFoundException("You can only send money to your contacts", HttpStatus.NOT_FOUND);
         }
 
-        int amount = MoneyUtils.toCents(transactionRequestDto.getAmount());
-        int total = MoneyUtils.withFee(amount, FEE_RATE);
+        int amount = transactionRequestDto.getAmount() * 100;
+        int fee = BigDecimal.valueOf(amount).multiply(FEE_RATE).setScale(0, RoundingMode.HALF_UP).intValueExact();
+        int total = amount + fee;
 
         final Wallet senderWallet = sender.getWallet();
-
 
         if (senderWallet.getBalance() < total) {
             throw new InsufficientSoldException("Insufficient sold in your wallet", HttpStatus.CONFLICT);
@@ -73,13 +72,7 @@ public class TransactionServiceImpl implements TransactionService {
 
         walletRepository.saveAll(List.of(senderWallet, receiverWallet));
 
-        // todo : passer par un constructeur
-        final Transaction transaction = new Transaction();
-        transaction.setSender(sender);
-        transaction.setReceiver(receiver);
-        transaction.setAmount(amount);
-        transaction.setDescription(transactionRequestDto.getDescription());
-        transaction.setFee(FEE_RATE);
+        final Transaction transaction = new Transaction(sender, receiver, transactionRequestDto.getDescription(), amount, fee);
         transactionRepository.save(transaction);
     }
 
@@ -91,7 +84,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     public List<TransactionResponse> getAllTransactions(long senderId) {
 
-        return transactionRepository.findAllBySenderOrReceiverId(senderId)
+        return transactionRepository.findAllBySenderOrReceiverIdOrderByCreatedAtDesc(senderId)
                 .stream()
                 .map(transaction -> convertTransaction(transaction, senderId))
                 .toList();
@@ -111,8 +104,9 @@ public class TransactionServiceImpl implements TransactionService {
 
         return new TransactionResponse(
                 user,
+                transaction.getDescription(),
                 transaction.getAmount() * multiplicator,
-                LocalDateTime.now() //todo fix
+                transaction.getCreatedAt()
         );
     }
 

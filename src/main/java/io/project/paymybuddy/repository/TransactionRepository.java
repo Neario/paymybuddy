@@ -12,6 +12,6 @@ import java.util.List;
 public interface TransactionRepository extends JpaRepository<Transaction, Integer> {
     List<Transaction> findAllBySenderId(Long senderId);
 
-    @Query("select t from Transaction t where t.sender.id = :id or t.receiver.id = :id")
-    List<Transaction> findAllBySenderOrReceiverId(@Param("id") Long userId);
+    @Query("select t from Transaction t where t.sender.id = :id or t.receiver.id = :id order by t.createdAt desc")
+    List<Transaction> findAllBySenderOrReceiverIdOrderByCreatedAtDesc(@Param("id") Long userId);
 }

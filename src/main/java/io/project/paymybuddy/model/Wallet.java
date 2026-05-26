@@ -2,8 +2,6 @@ package io.project.paymybuddy.model;
 
 import jakarta.persistence.*;
 
-import java.math.BigDecimal;
-
 @Entity
 public class Wallet {
     @Id
