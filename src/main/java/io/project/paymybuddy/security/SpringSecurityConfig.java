@@ -32,7 +32,7 @@ public class SpringSecurityConfig {
                 })
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .defaultSuccessUrl("/", true)
+                        .defaultSuccessUrl("/transaction", true)
                         .permitAll()
                 )
                 .logout(logout -> logout
