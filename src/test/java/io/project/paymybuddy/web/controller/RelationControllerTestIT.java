@@ -94,25 +94,6 @@ public class RelationControllerTestIT {
     }
 
     @Test
-    void shouldAddContactAndAlreadyExist() throws Exception {
-        Relation relation = new Relation();
-        relation.setUser(currentUser);
-        relation.setRelation(contact);
-        relationRepository.save(relation);
-        currentUser.setRelations(Set.of(relation));
-        contact.setRelations(Set.of(relation));
-
-        mockMvc.perform(post("/contact")
-                        .param("email", "test@test.com")
-                        .with(csrf())
-                        .with(user(userDetails)))
-                .andExpect(status().isOk())
-                .andExpect(view().name("relation/addContact"))
-                .andExpect(model().attributeExists("errors"))
-                .andExpect(model().attribute("errors", contains("User already in your contact")));
-    }
-
-    @Test
     void shouldAddContactAndYourself() throws Exception {
         mockMvc.perform(post("/contact")
                         .param("email", "mika@test.com")

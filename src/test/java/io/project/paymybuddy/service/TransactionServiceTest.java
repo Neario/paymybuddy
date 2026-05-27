@@ -19,8 +19,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -78,7 +76,7 @@ public class TransactionServiceTest {
         receiverWallet.setBalance(0);
         receiver.setWallet(receiverWallet);
 
-        transactionRequestDto = new TransactionRequestDto("test@test.com", new BigDecimal("10"), "test");
+        transactionRequestDto = new TransactionRequestDto("test@test.com", 10, "test");
     }
 
     @Test
@@ -106,7 +104,7 @@ public class TransactionServiceTest {
     @Test
     public void shouldTransactionReturnSendMoneyYourselfException() {
         TransactionRequestDto transactionRequestSendYourselfDto = new TransactionRequestDto("mika@test.com"
-                , new BigDecimal("10")
+                , 10
                 , "test");
         when(userRepository.findByEmail(transactionRequestSendYourselfDto.getReceiver())).thenReturn(Optional.of(sender));
         assertThrows(SendMoneyYourselfException.class, () -> {

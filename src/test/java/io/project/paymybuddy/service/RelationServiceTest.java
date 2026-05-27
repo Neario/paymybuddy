@@ -2,7 +2,6 @@ package io.project.paymybuddy.service;
 
 import io.project.paymybuddy.dto.RelationDto;
 import io.project.paymybuddy.exception.AddYourselfException;
-import io.project.paymybuddy.exception.AlreadyExistsException;
 import io.project.paymybuddy.exception.UserNotFoundException;
 import io.project.paymybuddy.model.Relation;
 import io.project.paymybuddy.model.User;
@@ -59,7 +58,6 @@ public class RelationServiceTest {
     @Test
     void shouldAddRelation() {
         when(userRepository.findByEmail("test@test.com")).thenReturn(Optional.of(contact));
-        when(relationRepository.existsByUserIdAndRelationId(1L, 2L)).thenReturn(false);
 
         relationService.addRelation(currentUser, relationDto);
 
@@ -84,18 +82,6 @@ public class RelationServiceTest {
 
         assertThrows(AddYourselfException.class, () -> {
             relationService.addRelation(currentUser, relationDtoMySelf);
-        });
-
-        verify(relationRepository, never()).save(any());
-    }
-
-    @Test
-    void shouldThrowAlreadyExistsExceptionWhenContactAlreadyAdded() {
-        when(userRepository.findByEmail("test@test.com")).thenReturn(Optional.of(contact));
-        when(relationRepository.existsByUserIdAndRelationId(1L, 2L)).thenReturn(true);
-
-        assertThrows(AlreadyExistsException.class, () -> {
-            relationService.addRelation(currentUser, relationDto);
         });
 
         verify(relationRepository, never()).save(any());

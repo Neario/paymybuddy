@@ -14,18 +14,21 @@
     <div class="d-flex justify-content-center gap-3 addContact">
         <div class="card border-0">
             <div class="card-body">
-                <form th:action="@{/contact}" th:object="${relation}" method="post" class="d-flex align-items-end gap-2">
-                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                    <div class="d-flex flex-column">
-                        <label for="email">Chercher une relation</label>
-                        <input id="email" type="email" th:field="*{email}" placeholder="Saisir une adresse email"/>
+                <form th:action="@{/contact}" th:object="${relation}" method="post" class="d-flex flex-column gap-2">
+                    <div class="d-flex align-items-end gap-2">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <div class="d-flex flex-column">
+                            <label for="email">Chercher une relation</label>
+                            <input id="email" type="email" th:field="*{email}" placeholder="Saisir une adresse email"/>
+                        </div>
+
+                        <button type="submit" class="btn text-white btn-orange">Ajouter</button>
                     </div>
 
-                    <button type="submit" class="btn text-white btn-orange">Ajouter</button>
                     <div>
                         <div th:if="${errors}">
                             <ul>
-                                <li th:each="error : ${errors}" th:text="${error}"></li>
+                                <li th:each="error : ${errors}" th:text="${error}" style="color: red;"></li>
                             </ul>
                         </div>
                     </div>

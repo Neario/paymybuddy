@@ -63,7 +63,7 @@ public class TransactionRepositoryTest {
         transaction.setReceiver(receiver);
         transaction.setAmount(1000);
         transaction.setDescription("Test");
-        transaction.setFee(new BigDecimal("0.005"));
+        transaction.setFee(5);
         transactionRepository.save(transaction);
 
         List<Transaction> result = transactionRepository.findAllBySenderId(sender.getId());

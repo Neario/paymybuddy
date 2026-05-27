@@ -30,10 +30,10 @@
                 <button type="submit" class="btn btn-primary">Payer</button>
             </div>
         </form>
-        <ul th:if="${errors}">
-            <li th:each="error : ${errors}" th:text="${error}" style="color: red;"></li>
-        </ul>
     </section>
+    <ul th:if="${errors}" class="d-flex align-items-center flex-column">
+        <li th:each="error : ${errors}" th:text="${error}" style="color: red;"></li>
+    </ul>
 
     <section class="d-flex justify-content-center align-items-center flex-grow-1">
         <div class="d-flex flex-column w-100 border border-1 rounded">
@@ -50,7 +50,7 @@
                 <tr th:each="transaction : ${transactions}">
                     <td th:text="${transaction.user}"></td>
                     <td></td>
-                    <td th:text="${@moneyUtils.toEuros(transaction.amount)}"></td>
+                    <td th:text="${@moneyUtils.toEuros(transaction.amount)} + ' €'" th:classappend="${transaction.amount < 0} ? 'text-danger' : 'text-success'"></td>
                 </tr>
                 <tr th:if="${#lists.isEmpty(transactions)}">
                     <td colspan="3">Aucune transaction pour le moment</td>
