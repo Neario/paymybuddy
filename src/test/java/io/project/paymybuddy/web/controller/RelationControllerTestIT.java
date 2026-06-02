@@ -1,6 +1,5 @@
 package io.project.paymybuddy.web.controller;
 
-import io.project.paymybuddy.model.Relation;
 import io.project.paymybuddy.model.User;
 import io.project.paymybuddy.model.enumeration.UserRole;
 import io.project.paymybuddy.repository.RelationRepository;
@@ -15,8 +14,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Set;
 
 import static org.hamcrest.Matchers.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;

@@ -30,13 +30,6 @@ public class RelationController {
         return "relation/addContact";
     }
 
-    @GetMapping("/contact/show")
-    public String showContacts(Model model, @AuthenticationPrincipal CustomUserDetails currentUser) {
-        model.addAttribute("user", currentUser.getUser());
-        model.addAttribute("relations", relationService.getRelations(currentUser.getUser().getId()));
-        return "relation/showContacts";
-    }
-
     @PostMapping("/contact")
     public String addContact(@Valid @ModelAttribute("relation") RelationDto relationDto,
                              BindingResult bindingResult,

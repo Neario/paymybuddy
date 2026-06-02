@@ -1,6 +1,7 @@
 package io.project.paymybuddy.service;
 
 import io.project.paymybuddy.dto.TransactionRequestDto;
+import io.project.paymybuddy.dto.TransactionResponse;
 import io.project.paymybuddy.exception.*;
 import io.project.paymybuddy.model.Transaction;
 import io.project.paymybuddy.model.User;
@@ -19,6 +20,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -91,6 +93,8 @@ public class TransactionServiceTest {
         //THEN
         Assertions.assertEquals(8995, senderWallet.getBalance());
         Assertions.assertEquals(1000, receiverWallet.getBalance());
+        verify(walletRepository, times(1)).saveAll(anyList());
+        verify(transactionRepository, times(1)).save(any(Transaction.class));
     }
 
     @Test
@@ -99,6 +103,9 @@ public class TransactionServiceTest {
         assertThrows(UserNotFoundException.class, () -> {
             transactionService.transaction(sender, transactionRequestDto);
         });
+
+        verify(transactionRepository, never()).save(any());
+        verify(walletRepository, never()).save(any());
     }
 
     @Test
@@ -111,6 +118,9 @@ public class TransactionServiceTest {
             transactionService.transaction(sender, transactionRequestSendYourselfDto);
         });
 
+        verify(transactionRepository, never()).save(any());
+        verify(walletRepository, never()).save(any());
+
     }
 
     @Test
@@ -120,6 +130,9 @@ public class TransactionServiceTest {
         assertThrows(RelationNotFoundException.class, () -> {
             transactionService.transaction(sender, transactionRequestDto);
         });
+
+        verify(transactionRepository, never()).save(any());
+        verify(walletRepository, never()).save(any());
     }
 
     @Test
@@ -131,6 +144,9 @@ public class TransactionServiceTest {
         assertThrows(InsufficientSoldException.class, () -> {
             transactionService.transaction(sender, transactionRequestDto);
         });
+
+        verify(transactionRepository, never()).save(any());
+        verify(walletRepository, never()).save(any());
     }
 
     @Test
@@ -146,6 +162,7 @@ public class TransactionServiceTest {
         List<Transaction> result = transactionService.getTransactions(sender.getId());
 
         Assertions.assertEquals(1, result.size());
+        verify(transactionRepository, times(1)).findAllBySenderId(sender.getId());
     }
 
     @Test
@@ -155,5 +172,37 @@ public class TransactionServiceTest {
         List<Transaction> result = transactionService.getTransactions(sender.getId());
 
         Assertions.assertTrue(result.isEmpty());
+        verify(transactionRepository, times(1)).findAllBySenderId(sender.getId());
     }
+
+    @Test
+    public void shouldReturnAllTransactions() {
+        // GIVEN
+        Transaction transaction = new Transaction();
+        transaction.setSender(sender);
+        transaction.setReceiver(receiver);
+        transaction.setDescription("test");
+        transaction.setAmount(1000);
+        transaction.setCreatedAt(LocalDateTime.now());
+
+        when(transactionRepository.findAllBySenderOrReceiverIdOrderByCreatedAtDesc(sender.getId())).thenReturn(List.of(transaction));
+
+        List<TransactionResponse> result = transactionService.getAllTransactions(sender.getId());
+
+        Assertions.assertEquals(1, result.size());
+        Assertions.assertEquals("test", result.getFirst().user());
+        Assertions.assertEquals(-1000, result.getFirst().amount());
+        verify(transactionRepository, times(1)).findAllBySenderOrReceiverIdOrderByCreatedAtDesc(sender.getId());
+    }
+
+    @Test
+    public void shouldReturnEmptyListWhenNoAllTransactionsFound() {
+        when(transactionRepository.findAllBySenderOrReceiverIdOrderByCreatedAtDesc(sender.getId())).thenReturn(List.of());
+
+        List<TransactionResponse> result = transactionService.getAllTransactions(sender.getId());
+
+        Assertions.assertTrue(result.isEmpty());
+        verify(transactionRepository, times(1)).findAllBySenderOrReceiverIdOrderByCreatedAtDesc(sender.getId());
+    }
+
 }
